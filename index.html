@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>protean-edu | learn to read the code your agents write</title>
+<meta name="description" content="A teaching plugin for Hermes. /edu on starts plain-word lessons that teach a non-technical user to read the code their agents write. The plugin explains decisions and names checks. It never does the work. Stdlib only. No LLM, no network, no shell.">
+<meta property="og:title" content="protean-edu — learn to read the code your agents write">
+<meta property="og:description" content="Teaching plugin for Hermes. Plain-word lessons, one check per lesson, an honor-based review gate. No LLM, no network, no shell.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://aska-digital.github.io/protean-edu/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+:root{
+  --bg:#0b0e14; --panel:#11161f; --panel2:#151b26; --line:#232b3a;
+  --ink:#e8ecf3; --muted:#9aa5b8; --dim:#6b7488;
+  --accent:#7dd3fc; --accent-dim:#3b82a6; --ok:#7ee8a2; --warn:#ffd479; --bad:#ff9c9c;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:0 22px}
+header.top{border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(11,14,20,.92);backdrop-filter:blur(8px);z-index:10}
+header.top .wrap{display:flex;align-items:center;gap:18px;padding-top:14px;padding-bottom:14px}
+.brand{font-family:var(--mono);font-size:15px;color:var(--ink);text-decoration:none}
+.brand b{color:var(--accent)}
+nav{margin-left:auto;display:flex;gap:16px;font-size:14px}
+nav a{color:var(--muted);text-decoration:none}
+nav a:hover{color:var(--ink)}
+.hero{padding:72px 0 48px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin:0 0 18px}
+h1{font-size:clamp(34px,6vw,52px);line-height:1.12;margin:0 0 18px;font-weight:650;letter-spacing:-.01em}
+h1 .slash{color:var(--accent)}
+.lede{font-size:19px;color:var(--muted);max-width:640px;margin:0 0 30px}
+.lede strong{color:var(--ink);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:34px}
+.btn{display:inline-block;padding:11px 20px;border-radius:9px;font-size:15px;font-weight:600;text-decoration:none;border:1px solid var(--line);color:var(--ink);background:var(--panel)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#06121a}
+.btn:hover{filter:brightness(1.1)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.badge{font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:4px 12px;background:var(--panel)}
+.badge .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok);margin-right:6px}
+.badge.warn .dot{background:var(--warn)}
+section{padding:44px 0;border-top:1px solid var(--line)}
+h2{font-size:26px;margin:0 0 6px;font-weight:650;letter-spacing:-.01em}
+h2 .n{font-family:var(--mono);font-size:15px;color:var(--dim);font-weight:400;margin-right:10px}
+.sub{color:var(--muted);margin:0 0 22px;max-width:660px}
+.sub strong{color:var(--ink);font-weight:600}
+.grid{display:grid;gap:14px}
+@media(min-width:700px){.grid.cols3{grid-template-columns:repeat(3,1fr)}.grid.cols2{grid-template-columns:repeat(2,1fr)}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h3{margin:0 0 8px;font-size:16px}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.card .tag{font-family:var(--mono);font-size:12px;color:var(--accent)}
+pre{background:#080b10;border:1px solid var(--line);border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:13.5px;line-height:1.6;color:#cdd6e4}
+code{font-family:var(--mono);font-size:.92em}
+.cmd{position:relative;margin:0 0 14px}
+.cmd button{position:absolute;top:8px;right:8px;background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:7px;font-size:12px;padding:5px 10px;cursor:pointer;font-family:var(--mono)}
+.cmd button:hover{color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14.5px;margin:0 0 18px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:12.5px;color:var(--dim);font-weight:500}
+td.m{font-family:var(--mono);font-size:13.5px}
+td .ok{color:var(--ok)} td .warn{color:var(--warn)}
+.note{border-left:3px solid var(--accent-dim);padding:2px 0 2px 16px;color:var(--muted);font-size:14.5px;margin:0 0 18px}
+.note strong{color:var(--ink)}
+ul.tight{margin:0 0 18px;padding-left:20px;color:var(--muted)}
+ul.tight li{margin-bottom:6px}
+ul.tight strong{color:var(--ink);font-weight:600}
+footer{border-top:1px solid var(--line);padding:30px 0 60px;color:var(--dim);font-size:13.5px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--ink)}
+.spacer{flex:1}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><b>protean</b>-edu</a>
+    <nav>
+      <a href="#install">Install</a>
+      <a href="#how">How it works</a>
+      <a href="#gate">The gate</a>
+      <a href="#safe">Safe by design</a>
+      <a href="#source">Source</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap" id="top">
+  <div class="hero">
+    <p class="kicker">Hermes Agent plugin</p>
+    <h1>Learn to read <span class="slash">the code your agents write.</span></h1>
+    <p class="lede"><strong>protean-edu</strong> is a teaching plugin for Hermes. <code>/edu on</code> starts plain-word lessons for a non-technical user: what the agent decided, why it matters, and one check to run yourself.</p>
+    <p class="lede">The plugin explains decisions and names checks. <strong>It never does the work.</strong> The agent keeps working. The lessons are the point.</p>
+    <div class="cta">
+      <a class="btn primary" href="#install">Install via Hermes</a>
+      <a class="btn" href="https://github.com/aska-digital/protean-edu">View source</a>
+      <a class="btn" href="https://github.com/aska-digital/protean-edu/blob/main/docs/contract.md">Read the contract</a>
+    </div>
+    <div class="badges">
+      <span class="badge"><span class="dot"></span>v0.1.0</span>
+      <span class="badge"><span class="dot"></span>stdlib only · zero dependencies</span>
+      <span class="badge"><span class="dot"></span>no LLM · no network · no shell</span>
+      <span class="badge"><span class="dot"></span>off by default</span>
+      <span class="badge warn"><span class="dot"></span>catalog entry pending, install from source</span>
+    </div>
+  </div>
+
+  <section id="install">
+    <h2><span class="n">01</span>Install</h2>
+    <p class="sub">Install from the repo, enable it, start a new Hermes session. Plugin commands load at startup.</p>
+    <div class="cmd">
+      <pre>hermes plugins install aska-digital/protean-edu
+hermes plugins enable protean-edu</pre>
+      <button data-copy>copy</button>
+    </div>
+    <p class="note">The Hermes catalog entry is a later stage (contract §10), so install from source for now. <strong>Platforms:</strong> anything running Python 3.11 or newer. <strong>Configuration:</strong> none.</p>
+    <p class="sub" style="margin-bottom:0">The lessons themselves are a separate curriculum stage and are not written yet. Until they are, <code>/edu next</code> says so instead of inventing one.</p>
+  </section>
+
+  <section id="how">
+    <h2><span class="n">02</span>How it works</h2>
+    <p class="sub">One slash command, six subcommands. Each lesson is a static markdown file, found by sorting a directory. Nothing is ever generated or invented.</p>
+    <table>
+      <tr><th>Command</th><th>Does</th><th>Writes</th></tr>
+      <tr><td class="m"><code>/edu on</code></td><td>Turns teaching on for this profile. Keeps your level and lesson.</td><td class="m">enabled = true</td></tr>
+      <tr><td class="m"><code>/edu off</code></td><td>Turns teaching off. Your agents keep working. The lessons stop.</td><td class="m">enabled = false</td></tr>
+      <tr><td class="m"><code>/edu status</code></td><td>Shows whether teaching is on, and which lesson you are on.</td><td class="m">nothing</td></tr>
+      <tr><td class="m"><code>/edu next</code></td><td>Shows the current lesson and its Proof Run. Run it again with <code>yes</code> to advance.</td><td class="m">on <code>yes</code>: level + 1</td></tr>
+      <tr><td class="m"><code>/edu review</code></td><td>Shows the current lesson's title, why it matters, and its Proof Run. Read-only.</td><td class="m">nothing</td></tr>
+      <tr><td class="m"><code>/edu help</code></td><td>Shows this list.</td><td class="m">nothing</td></tr>
+    </table>
+    <div class="grid cols3">
+      <div class="card">
+        <p class="tag">lessons/</p>
+        <h3>Static lesson files</h3>
+        <p>One file per lesson, <code>NNN-slug.md</code>, with five required headings: why it matters, the idea, the check, and what comes next. Finding a lesson is a directory sort, never a model call.</p>
+      </div>
+      <div class="card">
+        <p class="tag">injection</p>
+        <h3>A nudge, not a lecture</h3>
+        <p>While teaching is on, a short reminder (at most 160 characters) is appended to your latest message: the current lesson and its check. Nothing else. Off, and it appends nothing.</p>
+      </div>
+      <div class="card">
+        <p class="tag">state</p>
+        <h3>One small file</h3>
+        <p>Progress lives in a single JSON file under your Hermes home: on or off, your level, your lesson. Turning teaching off never wipes it. A fresh install behaves exactly like Hermes without the plugin.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="gate">
+    <h2><span class="n">03</span>The review gate</h2>
+    <p class="sub">Each lesson names its <strong>Proof Run</strong>: rerun the exact thing the agent claims to have done, with your own eyes. Compare what actually happens to what the agent said would happen. A claim is not proof. The output of running it is.</p>
+    <div class="cmd">
+      <pre>/edu next
+Lesson 1: Reading a diff
+Proof Run — Open the file the agent says it changed and read the diff.
+When the check passes, run: /edu next yes</pre>
+      <button data-copy>copy</button>
+    </div>
+    <p class="note"><strong>The gate is honor-based, by design.</strong> The plugin cannot watch your screen, run shell, or make a network call, so it cannot verify you ran the check. Typing <code>yes</code> is your own hand on the record. The plugin never presents that attestation as verification, and it never will: adding proof would need access the contract forbids.</p>
+  </section>
+
+  <section id="safe">
+    <h2><span class="n">04</span>Safe by design</h2>
+    <p class="sub">The contract binds the plugin to three public surfaces and forbids everything else. The full list is in <a href="https://github.com/aska-digital/protean-edu/blob/main/docs/contract.md" style="color:var(--accent)">docs/contract.md</a>.</p>
+    <ul class="tight">
+      <li><strong>No LLM, no shell, no network, no secrets.</strong> Python standard library only. It reads files and returns strings.</li>
+      <li><strong>One slash command, registered through the plugin API.</strong> Hermes core files are never edited.</li>
+      <li><strong>Writes one file, ever:</strong> the three-key state file under your Hermes home. Nothing else.</li>
+      <li><strong>The reminder is capped at 160 characters</strong> including its prefix, appended to your latest message only. Never the system prompt.</li>
+      <li><strong>A missing or malformed lesson is reported as missing or malformed.</strong> Nothing is invented, synthesized, or faked.</li>
+      <li><strong>Off by default.</strong> Until <code>/edu on</code>, a fresh install is indistinguishable from plain Hermes.</li>
+    </ul>
+  </section>
+
+  <section id="source">
+    <h2><span class="n">05</span>Source</h2>
+    <p class="sub">The whole plugin is one module, one manifest, and one test file. Small enough to read in one sitting.</p>
+    <div class="cmd">
+      <pre>protean-edu/
+├── __init__.py            # the plugin: command, lesson parser, injection hook
+├── plugin.yaml            # manifest
+├── docs/
+│   ├── contract.md        # the locked build contract (single source of truth)
+│   └── design-notes.md    # deliberate decisions, recorded so they stand
+└── tests/
+    └── test_edu_command.py  # 26 tests</pre>
+    </div>
+    <div class="cta" style="margin-bottom:0">
+      <a class="btn primary" href="https://github.com/aska-digital/protean-edu">GitHub repo</a>
+      <a class="btn" href="https://github.com/aska-digital/protean-edu/blob/main/docs/contract.md">Contract</a>
+      <a class="btn" href="https://hermes-agent.nousresearch.com/docs/developer-guide/plugins">Plugin developer guide</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <span><b style="color:var(--muted)">protean-edu</b> v0.1.0 · by <a href="https://github.com/aska-digital">aska-digital</a></span>
+      <span class="spacer"></span>
+      <span>Built for self-directed learning</span>
+    </div>
+  </footer>
+</div>
+<script>
+document.querySelectorAll('[data-copy]').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var pre = btn.parentElement.querySelector('pre');
+    navigator.clipboard.writeText(pre.textContent.replace(/\\\n/g,'')).then(function(){
+      btn.textContent = 'copied'; setTimeout(function(){ btn.textContent = 'copy'; }, 1200);
+    });
+  });
+});
+</script>
+</body>
+</html>
