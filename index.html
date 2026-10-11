@@ -73,6 +73,12 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
 footer a{color:var(--muted);text-decoration:none}
 footer a:hover{color:var(--ink)}
 .spacer{flex:1}
+.aska-return{position:fixed;left:18px;bottom:18px;z-index:2000;display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:rgba(17,22,31,.88);border:1px solid var(--line);color:var(--accent);font:600 12px/1.2 var(--mono);letter-spacing:.04em;text-decoration:none;backdrop-filter:blur(8px)}
+.aska-return:hover{border-color:var(--accent);color:var(--ink)}
+.aska-made{position:fixed;right:18px;bottom:18px;z-index:2000;margin:0;font:12px/1.4 var(--mono);color:var(--muted)}
+.aska-made a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-dim)}
+.aska-made a:hover{color:var(--ink)}
+@media(max-width:560px){.aska-return{left:12px;bottom:12px;padding:10px 14px}.aska-made{right:12px;bottom:12px}}
 </style>
 </head>
 <body>
@@ -216,5 +222,7 @@ document.querySelectorAll('[data-copy]').forEach(function(btn){
   });
 });
 </script>
+<a class="aska-return" href="https://askaconsult.com/digital/">&#8592; Back to Aska Digital</a>
+<p class="aska-made">Built by <a href="https://askaconsult.com/digital/">Aska Digital</a></p>
 </body>
 </html>
